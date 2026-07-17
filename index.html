@@ -224,12 +224,101 @@
   <div class="nav-brand">PHX <span>Rentals</span></div>
   <div class="nav-right">
     <span class="save-dot" id="saveDot" title="Saved"></span>
+    <button onclick="openAddListing()" style="padding:6px 12px;font-size:12px;font-weight:600;background:var(--accent);border:none;border-radius:99px;color:white;cursor:pointer;font-family:Inter,sans-serif;">+ Add</button>
     <div class="user-pill" onclick="resetName()">
       <div class="user-avatar" id="userAvatar">?</div>
       <span id="userName" style="font-size:13px">You</span>
     </div>
   </div>
 </nav>
+
+<!-- Add Listing Modal -->
+<div class="modal-overlay" id="addModal" style="display:none;z-index:350">
+  <div class="modal" style="max-height:90vh;overflow-y:auto;max-width:420px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h2>Add a listing</h2>
+      <button onclick="closeAddListing()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">✕</button>
+    </div>
+    <p style="margin-bottom:16px">Fill in what you know — nothing is required except the address.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div>
+        <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Street address *</label>
+        <input id="add-addr" placeholder="e.g. 123 W Main St" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;color:var(--text);font-family:Inter,sans-serif;outline:none">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">City</label>
+        <select id="add-city" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;color:var(--text);font-family:Inter,sans-serif;outline:none">
+          <option value="Phoenix">Phoenix</option>
+          <option value="Tempe">Tempe</option>
+          <option value="Chandler">Chandler</option>
+          <option value="Mesa">Mesa</option>
+          <option value="Gilbert">Gilbert</option>
+          <option value="Scottsdale">Scottsdale</option>
+          <option value="Guadalupe">Guadalupe</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Price/mo</label>
+          <input id="add-price" type="number" placeholder="2500" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;color:var(--text);font-family:Inter,sans-serif;outline:none">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Sqft</label>
+          <input id="add-sqft" type="number" placeholder="1800" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;color:var(--text);font-family:Inter,sans-serif;outline:none">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div>
+          <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Beds</label>
+          <input id="add-beds" type="number" placeholder="3" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;color:var(--text);font-family:Inter,sans-serif;outline:none">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Baths</label>
+          <input id="add-baths" type="number" placeholder="2" step="0.5" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;color:var(--text);font-family:Inter,sans-serif;outline:none">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Stories</label>
+          <select id="add-stories" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;color:var(--text);font-family:Inter,sans-serif;outline:none">
+            <option value="">?</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Laundry</label>
+        <select id="add-laundry" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;color:var(--text);font-family:Inter,sans-serif;outline:none">
+          <option value="Unknown">Unknown</option>
+          <option value="In-unit">In-unit</option>
+          <option value="Hookups">Hookups only</option>
+          <option value="Shared">Shared</option>
+          <option value="None">None</option>
+        </select>
+      </div>
+
+      <!-- Toggles -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div onclick="toggleAddChip('pool')" id="chip-add-pool" style="padding:10px;text-align:center;font-size:13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer">🏊 Pool</div>
+        <div onclick="toggleAddChip('carpet')" id="chip-add-carpet" style="padding:10px;text-align:center;font-size:13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer">🪣 Carpet</div>
+        <div onclick="toggleAddChip('garage')" id="chip-add-garage" style="padding:10px;text-align:center;font-size:13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer">🚗 Garage</div>
+        <div onclick="toggleAddChip('pet')" id="chip-add-pet" style="padding:10px;text-align:center;font-size:13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer">🐾 Pet friendly</div>
+      </div>
+
+      <div>
+        <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Realtor.com link</label>
+        <input id="add-url" placeholder="https://www.realtor.com/..." style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;color:var(--text);font-family:Inter,sans-serif;outline:none">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Notes</label>
+        <textarea id="add-notes" placeholder="Anything notable — kitchen size, flooring, backyard, etc." style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;color:var(--text);font-family:Inter,sans-serif;outline:none;resize:vertical;min-height:80px"></textarea>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="submitAddListing()" style="margin-top:16px">Add listing →</button>
+  </div>
+</div>
 
 <!-- Tabs -->
 <div class="tabs">
@@ -305,7 +394,7 @@
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────────────────
 // Replace with your Google Apps Script Web App URL after setup
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxoXSP2A60SkHYWeUovFGjTQBmapx2yLRW1ry-on0MlatYwzrLfISqu3w39KYKKDz4EoA/exec';
+const SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
 
 // ── DATA ────────────────────────────────────────────────────────────────────
 const LISTINGS_RAW = [
@@ -397,7 +486,7 @@ function flashSave() {
 
 // ── SHEET SYNC ───────────────────────────────────────────────────────────────
 async function syncToSheet() {
-  if (SHEET_URL === 'https://script.google.com/macros/s/AKfycbxoXSP2A60SkHYWeUovFGjTQBmapx2yLRW1ry-on0MlatYwzrLfISqu3w39KYKKDz4EoA/exec') return;
+  if (SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
   try {
     await fetch(SHEET_URL, {
       method: 'POST',
@@ -409,7 +498,7 @@ async function syncToSheet() {
 }
 
 async function loadFromSheet() {
-  if (SHEET_URL === 'https://script.google.com/macros/s/AKfycbxoXSP2A60SkHYWeUovFGjTQBmapx2yLRW1ry-on0MlatYwzrLfISqu3w39KYKKDz4EoA/exec') return;
+  if (SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
   try {
     const r = await fetch(SHEET_URL);
     const d = await r.json();
@@ -882,8 +971,86 @@ function showToast(msg) {
   toastTimeout = setTimeout(() => t.classList.remove('show'), 2500);
 }
 
+// ── ADD LISTING ───────────────────────────────────────────────────────────────
+const addChips = { pool: false, carpet: false, garage: false, pet: false };
+
+function openAddListing() {
+  document.getElementById('addModal').style.display = 'flex';
+  // reset form
+  ['addr','price','sqft','beds','baths','notes','url'].forEach(f => document.getElementById('add-'+f).value = '');
+  document.getElementById('add-city').value = 'Phoenix';
+  document.getElementById('add-stories').value = '';
+  document.getElementById('add-laundry').value = 'Unknown';
+  Object.keys(addChips).forEach(k => {
+    addChips[k] = false;
+    const el = document.getElementById('chip-add-'+k);
+    el.style.background = 'var(--surface2)';
+    el.style.borderColor = 'var(--border)';
+    el.style.color = 'var(--text2)';
+  });
+}
+
+function closeAddListing() {
+  document.getElementById('addModal').style.display = 'none';
+}
+
+function toggleAddChip(key) {
+  addChips[key] = !addChips[key];
+  const el = document.getElementById('chip-add-'+key);
+  if (addChips[key]) {
+    el.style.background = 'var(--accent-dim)';
+    el.style.borderColor = 'var(--accent)';
+    el.style.color = '#a5b4fc';
+  } else {
+    el.style.background = 'var(--surface2)';
+    el.style.borderColor = 'var(--border)';
+    el.style.color = 'var(--text2)';
+  }
+}
+
+function submitAddListing() {
+  const addr = document.getElementById('add-addr').value.trim();
+  if (!addr) { showToast('Please enter an address!'); return; }
+  const newId = Date.now();
+  const newListing = {
+    id: newId,
+    addr,
+    city: document.getElementById('add-city').value,
+    price: parseInt(document.getElementById('add-price').value) || 0,
+    beds: parseInt(document.getElementById('add-beds').value) || 0,
+    baths: parseFloat(document.getElementById('add-baths').value) || 0,
+    sqft: parseInt(document.getElementById('add-sqft').value) || 0,
+    stories: parseInt(document.getElementById('add-stories').value) || 0,
+    laundry: document.getElementById('add-laundry').value,
+    pool: addChips.pool,
+    carpet: addChips.carpet,
+    garage: addChips.garage,
+    pet: addChips.pet,
+    url: document.getElementById('add-url').value.trim() || '#',
+    notes: document.getElementById('add-notes').value.trim(),
+  };
+  state.listings.push(newListing);
+  // save custom listings to localStorage
+  const custom = getLS('customListings', []);
+  custom.push(newListing);
+  setLS('customListings', custom);
+  saveState();
+  closeAddListing();
+  renderCards();
+  showToast('Listing added! ✅');
+}
+
+// load any previously added custom listings
+function loadCustomListings() {
+  const custom = getLS('customListings', []);
+  custom.forEach(l => {
+    if (!state.listings.find(x => x.id === l.id)) state.listings.push(l);
+  });
+}
+
 // ── INIT ─────────────────────────────────────────────────────────────────────
 loadState();
+loadCustomListings();
 initNamePicker();
 
 if (!state.userName) {
