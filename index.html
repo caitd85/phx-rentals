@@ -305,7 +305,7 @@
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────────────────
 // Replace with your Google Apps Script Web App URL after setup
-const SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxoXSP2A60SkHYWeUovFGjTQBmapx2yLRW1ry-on0MlatYwzrLfISqu3w39KYKKDz4EoA/exec';
 
 // ── DATA ────────────────────────────────────────────────────────────────────
 const LISTINGS_RAW = [
@@ -397,7 +397,7 @@ function flashSave() {
 
 // ── SHEET SYNC ───────────────────────────────────────────────────────────────
 async function syncToSheet() {
-  if (SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+  if (SHEET_URL === 'https://script.google.com/macros/s/AKfycbxoXSP2A60SkHYWeUovFGjTQBmapx2yLRW1ry-on0MlatYwzrLfISqu3w39KYKKDz4EoA/exec') return;
   try {
     await fetch(SHEET_URL, {
       method: 'POST',
@@ -409,7 +409,7 @@ async function syncToSheet() {
 }
 
 async function loadFromSheet() {
-  if (SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+  if (SHEET_URL === 'https://script.google.com/macros/s/AKfycbxoXSP2A60SkHYWeUovFGjTQBmapx2yLRW1ry-on0MlatYwzrLfISqu3w39KYKKDz4EoA/exec') return;
   try {
     const r = await fetch(SHEET_URL);
     const d = await r.json();
