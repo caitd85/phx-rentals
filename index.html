@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PHX Rentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e10;
+    --surface: #18181b;
+    --surface2: #1f1f23;
+    --border: #2a2a2f;
+    --border2: #38383f;
+    --text: #f4f4f5;
+    --text2: #a1a1aa;
+    --text3: #71717a;
+    --accent: #6366f1;
+    --accent-dim: #312e81;
+    --green: #22c55e;
+    --green-dim: #14532d;
+    --yellow: #eab308;
+    --yellow-dim: #713f12;
+    --red: #ef4444;
+    --red-dim: #7f1d1d;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { font-size: 16px; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  h1,h2,h3 { font-family: 'Space Grotesk', sans-serif; }
+
+  /* ── NAV ── */
+  .nav { position: sticky; top: 0; z-index: 100; background: rgba(14,14,16,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 16px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .nav-brand { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+  .nav-brand span { color: var(--accent); }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .user-pill { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 99px; padding: 5px 12px 5px 8px; font-size: 13px; cursor: pointer; }
+  .user-avatar { width: 22px; height: 22px; border-radius: 50%; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #a5b4fc; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 2px; padding: 12px 16px 0; background: var(--bg); overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex-shrink: 0; padding: 8px 16px; font-size: 13px; font-weight: 500; color: var(--text3); border: none; background: none; cursor: pointer; border-radius: var(--radius-sm) var(--radius-sm) 0 0; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; font-family: 'Inter', sans-serif; }
+  .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+  .tab-badge { display: inline-block; background: var(--surface2); color: var(--text3); font-size: 10px; padding: 1px 6px; border-radius: 99px; margin-left: 5px; }
+
+  /* ── FILTERS ── */
+  .filters { padding: 12px 16px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter-chip { flex-shrink: 0; padding: 6px 12px; font-size: 12px; font-weight: 500; border-radius: 99px; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); cursor: pointer; white-space: nowrap; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+  .filter-chip.active { background: var(--accent-dim); border-color: var(--accent); color: #a5b4fc; }
+  .filter-select { flex-shrink: 0; padding: 6px 12px; font-size: 12px; border-radius: 99px; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); cursor: pointer; font-family: 'Inter', sans-serif; appearance: none; padding-right: 24px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2371717a'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+
+  /* ── SEARCH ── */
+  .search-wrap { padding: 10px 16px; }
+  .search-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 14px; color: var(--text); font-family: 'Inter', sans-serif; outline: none; }
+  .search-input::placeholder { color: var(--text3); }
+  .search-input:focus { border-color: var(--accent); }
+
+  /* ── CARDS ── */
+  .cards { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color 0.15s; position: relative; }
+  .card:active { border-color: var(--border2); }
+  .card.toured { border-left: 3px solid var(--green); }
+  .card.scheduled { border-left: 3px solid var(--yellow); }
+  .card-header { padding: 14px 14px 10px; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .card-addr { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 500; line-height: 1.3; }
+  .card-city { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .card-price { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+  .card-actions { display: flex; align-items: center; gap: 6px; }
+  .btn-x { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border2); background: none; color: var(--text3); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .btn-x:active { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+  .card-meta { padding: 0 14px 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .badge { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 99px; }
+  .badge-beds { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+  .badge-pool { background: #0c2340; color: #60a5fa; border: 1px solid #1e3a5f; }
+  .badge-nocarpet { background: #0d2b1a; color: #4ade80; border: 1px solid #14532d; }
+  .badge-garage { background: #1c1a0e; color: #fbbf24; border: 1px solid #3d3000; }
+  .badge-pet { background: #1e0e2a; color: #c084fc; border: 1px solid #3b1a5a; }
+  .badge-toured { background: var(--green-dim); color: var(--green); border: 1px solid #166534; }
+  .badge-scheduled { background: var(--yellow-dim); color: var(--yellow); border: 1px solid #854d0e; }
+  .badge-stories { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+  .badge-warning { background: #2a1506; color: #fb923c; border: 1px solid #7c2d12; }
+  .card-footer { padding: 8px 14px 12px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); }
+  .stars-display { display: flex; gap: 2px; }
+  .star { font-size: 14px; color: var(--border2); }
+  .star.on { color: var(--yellow); }
+  .card-btns { display: flex; gap: 6px; }
+  .btn-sm { padding: 5px 12px; font-size: 12px; font-weight: 500; border-radius: 99px; border: 1px solid var(--border2); background: none; color: var(--text2); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+  .btn-sm.primary { background: var(--accent); border-color: var(--accent); color: white; }
+  .btn-sm:active { opacity: 0.8; }
+  .card-notes-preview { padding: 0 14px 10px; font-size: 12px; color: var(--text3); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  /* ── DETAIL PANEL ── */
+  .detail-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .detail-overlay.open { opacity: 1; pointer-events: all; }
+  .detail-panel { position: fixed; bottom: 0; left: 0; right: 0; max-height: 92vh; background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; z-index: 201; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1); overflow-y: auto; }
+  .detail-panel.open { transform: translateY(0); }
+  .detail-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 99px; margin: 12px auto 0; }
+  .detail-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); }
+  .detail-addr { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600; }
+  .detail-city { font-size: 13px; color: var(--text3); margin-top: 2px; }
+  .detail-price { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600; color: var(--accent); margin-top: 6px; }
+  .detail-section { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .detail-section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .detail-item { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .detail-item-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .detail-item-value { font-size: 14px; font-weight: 500; }
+  .detail-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .detail-notes { font-size: 14px; color: var(--text2); line-height: 1.7; }
+  .detail-link { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; background: var(--accent-dim); border: 1px solid var(--accent); border-radius: var(--radius-sm); color: #a5b4fc; font-size: 14px; font-weight: 500; text-decoration: none; margin-top: 4px; }
+
+  /* ── TOUR STATUS ── */
+  .tour-btns { display: flex; gap: 8px; }
+  .tour-btn { flex: 1; padding: 10px; font-size: 13px; font-weight: 500; border-radius: var(--radius-sm); border: 1px solid var(--border2); background: var(--surface2); color: var(--text2); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; text-align: center; }
+  .tour-btn.active-toured { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .tour-btn.active-scheduled { background: var(--yellow-dim); border-color: var(--yellow); color: var(--yellow); }
+  .tour-btn.active-no { background: var(--surface2); border-color: var(--border2); color: var(--text2); }
+
+  /* ── STAR RATING ── */
+  .stars-input { display: flex; gap: 6px; }
+  .star-btn { font-size: 24px; color: var(--border2); cursor: pointer; transition: color 0.1s; background: none; border: none; padding: 4px; }
+  .star-btn.on { color: var(--yellow); }
+
+  /* ── COMMENTS ── */
+  .comments-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+  .comment { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .comment-author { font-size: 11px; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+  .comment-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
+  .comment-input-wrap { display: flex; gap: 8px; }
+  .comment-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; color: var(--text); font-family: 'Inter', sans-serif; outline: none; resize: none; min-height: 44px; }
+  .comment-input:focus { border-color: var(--accent); }
+  .btn-send { padding: 10px 16px; background: var(--accent); border: none; border-radius: var(--radius-sm); color: white; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; }
+
+  /* ── TOUR CHECKLIST ── */
+  .checklist { display: flex; flex-direction: column; gap: 8px; }
+  .check-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; cursor: pointer; }
+  .check-box { width: 20px; height: 20px; border-radius: 5px; border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .check-box.checked { background: var(--green); border-color: var(--green); }
+  .check-box.checked::after { content: '✓'; color: white; font-size: 12px; font-weight: 700; }
+  .check-label { font-size: 13px; color: var(--text2); }
+  .tour-notes { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; color: var(--text); font-family: 'Inter', sans-serif; outline: none; resize: vertical; min-height: 80px; margin-top: 8px; }
+  .tour-notes:focus { border-color: var(--accent); }
+
+  /* ── SUMMARY ── */
+  .summary-wrap { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 600; color: var(--accent); }
+  .stat-label { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .leaderboard { display: flex; flex-direction: column; gap: 6px; }
+  .leader-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .leader-addr { font-size: 13px; font-weight: 500; }
+  .leader-city { font-size: 11px; color: var(--text3); }
+  .compare-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .compare-select { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; color: var(--text); font-family: 'Inter', sans-serif; width: 100%; }
+  .compare-table { overflow-x: auto; }
+  .compare-table table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .compare-table th { background: var(--surface2); padding: 8px 10px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+  .compare-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text2); }
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  /* ── MAP ── */
+  .map-wrap { padding: 16px; }
+  #map { width: 100%; height: 60vh; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface2); display: flex; align-items: center; justify-content: center; }
+  .map-placeholder { text-align: center; color: var(--text3); }
+  .map-placeholder p { font-size: 13px; margin-top: 8px; }
+
+  /* ── REMOVED ── */
+  .removed-wrap { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .removed-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; opacity: 0.7; }
+  .btn-restore { padding: 6px 14px; font-size: 12px; font-weight: 500; border-radius: 99px; border: 1px solid var(--accent); background: var(--accent-dim); color: #a5b4fc; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; }
+
+  /* ── MODAL (name picker) ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 28px 24px; width: 100%; max-width: 360px; }
+  .modal h2 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  .modal p { font-size: 14px; color: var(--text2); margin-bottom: 20px; line-height: 1.5; }
+  .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .name-option { padding: 10px; text-align: center; font-size: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; }
+  .name-option:active, .name-option.selected { background: var(--accent-dim); border-color: var(--accent); color: #a5b4fc; }
+  .name-custom { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 14px; color: var(--text); font-family: 'Inter', sans-serif; outline: none; margin-bottom: 14px; }
+  .name-custom:focus { border-color: var(--accent); }
+  .btn-primary { width: 100%; padding: 13px; background: var(--accent); border: none; border-radius: var(--radius-sm); color: white; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Space Grotesk', sans-serif; }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface2); border: 1px solid var(--border2); border-radius: 99px; padding: 10px 20px; font-size: 13px; color: var(--text); z-index: 400; opacity: 0; transition: all 0.25s; white-space: nowrap; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── EMPTY ── */
+  .empty { text-align: center; padding: 48px 24px; color: var(--text3); }
+  .empty-icon { font-size: 36px; margin-bottom: 12px; }
+  .empty p { font-size: 14px; }
+
+  /* ── SAVE STATUS ── */
+  .save-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; margin-left: 4px; }
+  .save-dot.saving { background: var(--yellow); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* scrollable detail content */
+  .detail-scroll { padding-bottom: 40px; }
+</style>
+</head>
+<body>
+
+<!-- Name Modal -->
+<div class="modal-overlay" id="nameModal">
+  <div class="modal">
+    <h2>Who are you? 👋</h2>
+    <p>Pick your name so your roommates can see your ratings and comments.</p>
+    <div class="name-grid" id="nameGrid"></div>
+    <input class="name-custom" id="nameCustom" placeholder="Or type a custom name..." maxlength="20">
+    <button class="btn-primary" onclick="saveName()">Let's go →</button>
+  </div>
+</div>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-brand">PHX <span>Rentals</span></div>
+  <div class="nav-right">
+    <span class="save-dot" id="saveDot" title="Saved"></span>
+    <div class="user-pill" onclick="resetName()">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <span id="userName" style="font-size:13px">You</span>
+    </div>
+  </div>
+</nav>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('listings')" id="tab-listings">Homes <span class="tab-badge" id="badge-listings">49</span></button>
+  <button class="tab" onclick="switchTab('summary')" id="tab-summary">Summary</button>
+  <button class="tab" onclick="switchTab('compare')" id="tab-compare">Compare</button>
+  <button class="tab" onclick="switchTab('removed')" id="tab-removed">Removed <span class="tab-badge" id="badge-removed">0</span></button>
+</div>
+
+<!-- Listings Tab -->
+<div id="view-listings">
+  <div class="search-wrap">
+    <input class="search-input" placeholder="Search by address or city..." oninput="renderCards()" id="searchInput">
+  </div>
+  <div class="filters">
+    <select class="filter-select" onchange="renderCards()" id="fCity">
+      <option value="">All cities</option>
+      <option>Phoenix</option><option>Tempe</option><option>Chandler</option>
+      <option>Mesa</option><option>Gilbert</option><option>Scottsdale</option><option>Guadalupe</option>
+    </select>
+    <select class="filter-select" onchange="renderCards()" id="fPrice">
+      <option value="">Any price</option>
+      <option value="2000">Under $2,000</option>
+      <option value="2500">Under $2,500</option>
+      <option value="3000">Under $3,000</option>
+      <option value="3500">Under $3,500</option>
+    </select>
+    <select class="filter-select" onchange="renderCards()" id="fBeds">
+      <option value="">Any beds</option>
+      <option value="3">3+ beds</option>
+      <option value="4">4+ beds</option>
+      <option value="5">5+ beds</option>
+    </select>
+    <button class="filter-chip" onclick="toggleFilter('pool')" id="chip-pool">🏊 Pool</button>
+    <button class="filter-chip" onclick="toggleFilter('nocarpet')" id="chip-nocarpet">✨ No carpet</button>
+    <button class="filter-chip" onclick="toggleFilter('garage')" id="chip-garage">🚗 Garage</button>
+    <button class="filter-chip" onclick="toggleFilter('pet')" id="chip-pet">🐾 Pet friendly</button>
+    <button class="filter-chip" onclick="toggleFilter('nottouredyet')" id="chip-nottouredyet">🔍 Not toured</button>
+    <button class="filter-chip" onclick="toggleFilter('toured')" id="chip-toured">✅ Toured</button>
+  </div>
+  <div class="cards" id="cardGrid"></div>
+</div>
+
+<!-- Summary Tab -->
+<div id="view-summary" style="display:none">
+  <div class="summary-wrap" id="summaryContent"></div>
+</div>
+
+<!-- Compare Tab -->
+<div id="view-compare" style="display:none">
+  <div class="summary-wrap">
+    <p style="font-size:13px;color:var(--text3);margin-bottom:4px">Pick up to 3 homes to compare side by side.</p>
+    <div id="compareSelects"></div>
+    <div class="compare-table" id="compareTable"></div>
+  </div>
+</div>
+
+<!-- Removed Tab -->
+<div id="view-removed" style="display:none">
+  <div class="removed-wrap" id="removedList"></div>
+</div>
+
+<!-- Detail Panel -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-handle"></div>
+  <div class="detail-scroll" id="detailContent"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+// Replace with your Google Apps Script Web App URL after setup
+const SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
+// ── DATA ────────────────────────────────────────────────────────────────────
+const LISTINGS_RAW = [
+  {id:1,addr:'2631 W Pecan Rd',city:'Phoenix',price:2888,beds:4,baths:3,sqft:2649,pool:false,stories:1,carpet:true,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/2631-W-Pecan-Rd_Phoenix_AZ_85041_M93127-88024',notes:'Faux wood tile throughout, carpet in all bedrooms. Chef\'s kitchen w/ granite island & stainless appliances. Attached casita w/ private garage — great for extra room. Gated community, basketball court, playground. 2-car garage main + 1-car casita. Both have separate laundry rooms.'},
+  {id:2,addr:'6417 S 23rd Dr',city:'Phoenix',price:2345,beds:4,baths:4,sqft:2305,pool:true,stories:1,carpet:false,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/6417-S-23rd-Dr_Phoenix_AZ_85041_M11452-28349',notes:'Tile throughout, no carpet. Kitchen island, quartz countertops, stainless appliances. Pool + fenced yard + patio. Smart home w/ video doorbell. ⚠️ True monthly ~$2,565 with required Invitation Homes fees (pool $120, smart home $40, W/D $40, air filter $10, utilities $10).'},
+  {id:3,addr:'524 W 18th St',city:'Tempe',price:3200,beds:4,baths:3,sqft:2000,pool:false,stories:1,carpet:true,garage:false,laundry:'In-unit',pet:false,url:'https://www.realtor.com/rentals/details/524-W-18th-St_Tempe_AZ_85281_M18129-34500',notes:'Carpet and tile flooring. Large bedrooms, 2 with ensuites. Kitchen island, granite counters, pantry, gas range. Private backyard w/ artificial turf + covered patio + shed. Carport 2 cars + street parking. Walking/biking distance to ASU. Partially furnished. Built 1959.'},
+  {id:4,addr:'1034 E Elm St',city:'Phoenix',price:2400,beds:3,baths:3,sqft:1349,pool:false,stories:1,carpet:false,garage:false,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/1034-E-Elm-St_Phoenix_AZ_85014_M28930-92215',notes:'Concrete/liquid granite floors — no carpet. Open concept, vaulted ceilings, kitchen island, granite counters. Biltmore/Camelback area — walkable to restaurants & shops. Cul-de-sac. Covered patio, fenced yard. Carport 1 car. True monthly $2,424 (1% service fee). Built 1955.'},
+  {id:5,addr:'2807 N 8th Ave',city:'Phoenix',price:2795,beds:3,baths:3,sqft:2049,pool:false,stories:1,carpet:false,garage:false,laundry:'Hookups',pet:true,url:'https://www.realtor.com/rentals/details/2807-N-8th-Ave_Phoenix_AZ_85007_M19818-31975',notes:'Full remodel — tile/laminate flooring, no carpet. Kitchen w/ gas stove, built-in microwave, dishwasher. W/D hookups only. Carport 1 car, fenced backyard, covered patio, storage shed. Near Encanto park, Phoenix College.'},
+  {id:6,addr:'4228 N 44th Pl',city:'Phoenix',price:3195,beds:3,baths:3,sqft:1128,pool:false,stories:1,carpet:false,garage:true,laundry:'In-garage',pet:true,url:'https://www.realtor.com/rentals/details/4228-N-44th-Pl_Phoenix_AZ_85018_M23955-75436',notes:'Tile throughout, no carpet. Charming remodeled kitchen: butcher-block counters, farmhouse sink, glass-front cabinets. Separate 150sqft private suite w/ own bath & mini-split — great extra room/income. Soaking tub in master. Gardening included. Arcadia area (44th & Indian School). Built 1953.'},
+  {id:7,addr:'764 W La Pryor Ln',city:'Gilbert',price:2680,beds:4,baths:3,sqft:1862,pool:true,stories:1,carpet:false,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/764-W-LA-Pryor-Ln_Gilbert_AZ_85233_M29456-25118',notes:'Tile throughout, no carpet. Granite countertops, stainless appliances. Pool + fenced backyard + patio. Smart home w/ video doorbell. Available Aug 15. ⚠️ True monthly ~$2,900 with Invitation Homes fees (pool $120, smart home $40, W/D $40, air filter $10, utilities $10).'},
+  {id:8,addr:'873 W Tremaine Ave',city:'Gilbert',price:3000,beds:4,baths:3,sqft:2389,pool:true,stories:2,carpet:false,garage:true,laundry:'Unknown',pet:true,url:'https://www.realtor.com/rentals/details/873-W-Tremaine-Ave_Gilbert_AZ_85233_M13962-07655',notes:'2-story, modern finishes, vaulted ceilings, abundant natural light. Master suite upstairs w/ dual vanity, separate shower & tub, walk-in closet. Pebble-tech pool + built-in BBQ + fireplace w/ seating — beautiful backyard. 2-car garage. Near downtown Gilbert, top schools. Sonesta Estates.'},
+  {id:9,addr:'873 W Baylor Ln',city:'Chandler',price:2890,beds:4,baths:3,sqft:2225,pool:false,stories:2,carpet:false,garage:true,laundry:'In-unit',pet:false,url:'https://www.realtor.com/rentals/details/873-W-Baylor-Ln_Chandler_AZ_85225_M92781-64946',notes:'2-story, built 2021 (nearly new!). 1 bed + 1 bath downstairs, 3 beds + loft upstairs. Upgraded finishes. Dual ovens, large island, quartz counters, gas range. Upstairs laundry room w/ washer/dryer. Artificial turf backyard + pavers. Gated community, community pool & ramada. HOA. Energy efficient.'},
+  {id:10,addr:'2322 S Rogers Cir Unit 4',city:'Mesa',price:2999,beds:4,baths:3,sqft:3265,pool:false,stories:2,carpet:true,garage:true,laundry:'Hookups',pet:true,url:'https://www.realtor.com/rentals/details/2322-S-Rogers-Unit-4_Mesa_AZ_85202_M21792-06039',notes:'2-story, built 1989. Carpet & tile. Custom home in gated Dobson Ranch on golf course. 3 fireplaces, large family room, great room, formal dining. 2 walk-out decks, above-ground spa. Gourmet kitchen w/ double oven, granite. Community pool across the street. Golf course views. W/D hookups only. HOA.'},
+  {id:11,addr:'209 E Beatryce St',city:'Tempe',price:3000,beds:3,baths:3,sqft:1805,pool:false,stories:2,carpet:true,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/209-E-Beatryce-St_Tempe_AZ_85288_M28404-08288',notes:'2-story, built 2018. Plank tile downstairs, carpet upstairs. Gourmet kitchen: granite island, gas cooktop, farmhouse sink, chef\'s hood, tile backsplash, walk-in pantry. In-unit W/D upper level. Fire pit, synthetic grass backyard, fenced. 2-car garage. Near ASU & Old Town Scottsdale. HOA.'},
+  {id:12,addr:'6552 E 2nd St',city:'Scottsdale',price:3200,beds:3,baths:3,sqft:2050,pool:false,stories:1,carpet:false,garage:false,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/6552-E-2nd-St_Scottsdale_AZ_85251_M14749-84189',notes:'1-story, built 1955. All 3 bathrooms recently renovated. Granite counters, gas cooktop, breakfast bar. Wet bar + extra storage — great for entertaining. W/D included, doggy door. Lush grass backyard + patio. No garage (1 open spot). Gardening included. Walking distance to Old Town Scottsdale. Available Sept 15.'},
+  {id:13,addr:'1425 E Hudson Dr',city:'Tempe',price:2795,beds:5,baths:3,sqft:2000,pool:true,stories:1,carpet:false,garage:false,laundry:'Unknown',pet:true,url:'https://www.realtor.com/rentals/details/1425-E-Hudson-Dr_Tempe_AZ_85281_M21584-78841',notes:'Ceramic tile throughout — no carpet. Island kitchen, granite countertops, open floor plan. Private pool + walled backyard. Near ASU, light rail, Apache & Rural. ⚠️ True monthly ~$2,935 (pool $70, landscaping $70 extra). Photos virtually staged. Available Aug 1.'},
+  {id:14,addr:'1414 S Jessica Ln',city:'Tempe',price:2755,beds:3,baths:3.5,sqft:1685,pool:false,stories:2,carpet:true,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/1414-S-Jessica-Ln_Tempe_AZ_85281_M17351-00833',notes:'2-story, built 2011. Wood-look laminate downstairs, carpet upstairs. Each bedroom has own ensuite + walk-in closet — perfect for roommates! Half bath downstairs. Kitchen island, breakfast bar, pantry. Upstairs W/D. Front & back patios, fenced yard. 1-car garage. Near ASU, light rail, Tempe Marketplace. HOA.'},
+  {id:15,addr:'2022 N 40th St',city:'Phoenix',price:2450,beds:3,baths:2,sqft:1200,pool:false,stories:1,carpet:false,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/2022-N-40th-St_Phoenix_AZ_85008_M11899-33846',notes:'Brand new flooring — no carpet. Mid-century modern remodel. Quartz countertops, smart stainless appliances, gas stove. In-unit W/D + steamer. Large covered patio, expansive private backyard. Attached garage, RV gate. Solar + backup battery (low utility bills). ⚠️ Extra fees: air filter $38/mo, admin $32.50/mo, one-time $300 lease fee.'},
+  {id:16,addr:'3929 S Pine St',city:'Tempe',price:3000,beds:4,baths:2,sqft:1993,pool:true,stories:1,carpet:false,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/3929-S-Pine-St_Tempe_AZ_85282_M20014-02893',notes:'1-story, cul-de-sac, built 1969. Vinyl & tile — no carpet. Split floor plan, 2 living rooms, bar top. Updated finishes & appliances. Private diving pool + huge covered patio + artificial turf. 2-car garage. No HOA. ⚠️ True monthly ~$3,200 ($200/mo for pool, landscaping & air filter). Lease starts 8/1.'},
+  {id:17,addr:'2229 E Sunland Ave',city:'Phoenix',price:2545,beds:4,baths:3,sqft:1743,pool:false,stories:1,carpet:false,garage:false,laundry:'Unknown',pet:true,url:'https://www.realtor.com/rentals/details/2229-E-Sunland-Ave_Phoenix_AZ_85040_M26459-68268',notes:'Built 2006. Modern finishes, spacious living areas, natural light. Yard for outdoor living. Pet friendly. Managed by Main Street Renewal. Details sparse — worth a tour.'},
+  {id:18,addr:'1918 E Palmcroft Dr',city:'Tempe',price:3200,beds:4,baths:3,sqft:1888,pool:true,stories:1,carpet:false,garage:false,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/1918-E-Palmcroft-Dr_Tempe_AZ_85282_M15695-53779',notes:'1-story, built 1964, big lot (8,089 sqft). Laminate & tile — no carpet. Two master bedrooms + bonus room — great for roommates! Remodeled kitchen, stainless appliances. Wet bar, fireplace, French doors, soft water system. Private pebble-tech diving pool + large patio + built-in BBQ. RV gate. Pool & landscaping included. No HOA. Available Aug 1.'},
+  {id:19,addr:'4616 E Summerhaven Dr',city:'Phoenix',price:2999,beds:4,baths:3,sqft:2565,pool:false,stories:2,carpet:false,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/4616-E-Summerhaven-Dr_Phoenix_AZ_85044_M15082-15780',notes:'2-story. Ceramic tile & hardwood — no carpet. Granite countertops, bonus room (office/game room/living space). In-unit W/D. ⚠️ Extra fees: one-time admin $300, 2% service fee, $39/mo resident benefits.'},
+  {id:20,addr:'1005 E Paseo Way',city:'Phoenix',price:3000,beds:4,baths:3,sqft:2400,pool:true,stories:1,carpet:false,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/1005-E-Paseo-Way_Phoenix_AZ_85042_M91467-42514',notes:'Built 2020, newer construction. Chef\'s kitchen w/ massive quartz island, double oven, gas range. Primary suite w/ dual vanities & walk-in closet. Resort-style community pool (beach entry) + hot tub, fitness center, yoga, BBQ gazebo. Gated community (Avance) at base of South Mountain. 51 miles of trails. 12 min to Sky Harbor. Pet fee: $200 one-time + $35/mo.'},
+  {id:21,addr:'1613 W St Catherine Ave',city:'Phoenix',price:2630,beds:5,baths:3,sqft:2209,pool:false,stories:2,carpet:false,garage:true,laundry:'Hookups',pet:true,url:'https://www.realtor.com/rentals/details/1613-W-St-Catherine-Ave_Phoenix_AZ_85041_M98763-24251',notes:'2-story. Vinyl plank & tile — no carpet. Quartz & granite counters, stainless appliances, fireplace. Great room, high ceilings, walk-in closet, dual vanity, garden tub. W/D hookups (2nd floor). 2-car garage, fenced yard, large backyard, patio. Smart home. HOA. ⚠️ Extra: smart home $19.99/mo, utility service $9.99/mo.'},
+  {id:22,addr:'1104 E Gail Dr',city:'Chandler',price:2800,beds:4,baths:3,sqft:2760,pool:false,stories:2,carpet:false,garage:true,laundry:'In-unit',pet:false,url:'https://www.realtor.com/rentals/details/1104-E-Gail-Dr_Chandler_AZ_85225_M14639-32987',notes:'2-story, corner lot. Wood & tile — no carpet. Kitchen w/ stainless, breakfast bar, pantry, reverse osmosis & water softener. Family room, formal dining, office/den. Primary suite w/ walk-in closet. In-unit W/D, dedicated laundry room. 2-car garage w/ EV charging station! Fenced yard. Dogs only (no cats). Available July 22. ⚠️ On Q fees: 4.99% admin/mo (~$140) + $49/mo benefits.'},
+  {id:23,addr:'230 N Nash Way',city:'Chandler',price:2685,beds:4,baths:3,sqft:1892,pool:false,stories:1,carpet:false,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/230-N-Nash-Way_Chandler_AZ_85225_M11802-75486',notes:'1-story, corner lot, Dobson Place. Tile + new vinyl in office — no carpet. New A/C, freshly painted. Kitchen w/ full appliances, pantry, open to family room. Primary suite w/ walk-in closet & double sink vanity. In-unit W/D. 2-car garage, covered patio, fenced yard w/ grass. ⚠️ On Q fees: 4.99% admin/mo (~$134) + $49/mo benefits + one-time $250 lease prep.'},
+  {id:24,addr:'2116 E Chanute Pass',city:'Phoenix',price:2550,beds:5,baths:3,sqft:3662,pool:false,stories:2,carpet:true,garage:true,laundry:'Hookups',pet:false,url:'https://www.realtor.com/rentals/details/2116-E-Chanute-Pass_Phoenix_AZ_85040_M11332-69131',notes:'2-story, built 2005. Carpet & tile. Kitchen island, granite counters, pantry. W/D hookups only. Community pool, tennis court, playground. HOA (Copper Leaf). Incredible value for 3,662 sqft! Listing is sparse — contact agent for details.'},
+  {id:25,addr:'2137 E Apollo Ave',city:'Tempe',price:2975,beds:4,baths:2,sqft:1809,pool:true,stories:1,carpet:false,garage:true,laundry:'Hookups',pet:true,url:'https://www.realtor.com/rentals/details/2137-E-Apollo-Ave_Tempe_AZ_85283_M10029-02898',notes:'1-story, renovated 2023. Updated flooring — no carpet. Sleek contemporary kitchen, upgraded bathrooms, fireplace. Multiple living areas, open floor plan. W/D hookups only. Private pool + fully fenced backyard. 2-car garage. No HOA. Near Baseline & McClintock, minutes to ASU.'},
+  {id:26,addr:'1664 E Del Rio Dr',city:'Tempe',price:2695,beds:4,baths:2,sqft:1633,pool:false,stories:1,carpet:false,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/1664-E-Del-Rio-Dr_Tempe_AZ_85282_M19864-47878',notes:'1-story, corner lot. Laminate & tile — no carpet. Granite countertops, kitchen island, breakfast bar. Wood-burning fireplace. In-unit W/D. 2-car garage, detached storage shed w/ electricity. Large backyard (⚠️ dirt — grass photos are staged!). Covered patio. New roof & updated electrical. No HOA. Near ASU.'},
+  {id:27,addr:'132 E Pebble Beach Dr',city:'Tempe',price:3195,beds:4,baths:2,sqft:1950,pool:true,stories:1,carpet:false,garage:true,laundry:'Hookups',pet:true,url:'https://www.realtor.com/rentals/details/132-E-Pebble-Beach-Dr_Tempe_AZ_85282_M22786-24239',notes:'1-story, ranch, built 1962, huge lot (9,631 sqft). Tile — no carpet. Kitchen island, granite counters, pantry, breakfast bar, reverse osmosis, skylights. Fireplace in living room. W/D hookups. Private diving pool (pool service included!). Oversized 2-car garage w/ cabinets + RV gate + 4 open spots. Covered patio, grass backyard, city light views. No HOA. Near ASU.'},
+  {id:28,addr:'3312 S Ventura Dr',city:'Tempe',price:2800,beds:4,baths:2,sqft:1982,pool:true,stories:1,carpet:true,garage:true,laundry:'In-garage',pet:true,url:'https://www.realtor.com/rentals/details/3312-S-Ventura-Dr_Tempe_AZ_85282_M21745-77728',notes:'1-story, built 1960. Carpet & tile. Updated designer finishes, newer appliances. Massive primary suite, wood-burning fireplace. W/D in garage. Private pool + covered patio. 2-car garage. No HOA. Pool & landscaping included. ⚠️ True monthly ~$3,000 ($200/mo extra for pool/landscaping/air filter). Minutes from ASU.'},
+  {id:29,addr:'225 E Minton Dr',city:'Tempe',price:3000,beds:4,baths:2,sqft:1760,pool:true,stories:1,carpet:true,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/225-E-Minton-Dr_Tempe_AZ_85282_M12909-90858',notes:'1-story, built 1964, big lot (8,325 sqft). Tile in main areas, carpet present. Open floor plan, granite counters, breakfast bar. Brick fireplace. Master ensuite w/ huge walk-in shower. In-unit W/D. Private pool + large covered patio + green turf. 2-car garage. No HOA. ⚠️ True monthly ~$3,200 ($200/mo extra). Near ASU. Available Aug 1.'},
+  {id:30,addr:'401 E Fremont Dr',city:'Tempe',price:2690,beds:4,baths:3,sqft:1884,pool:false,stories:1,carpet:false,garage:true,laundry:'Hookups',pet:true,url:'https://www.realtor.com/rentals/details/401-E-Fremont-Dr_Tempe_AZ_85282_M25439-83643',notes:'Tile & luxury vinyl plank — no carpet. Stainless appliances, sleek countertops. W/D hookups only. Fenced backyard, covered porch/patio. Smart home w/ video doorbell. ⚠️ True monthly ~$2,750 (smart home $40, air filter $10, utility fee $10). Invitation Homes managed.'},
+  {id:31,addr:'2450 E Darrel Rd',city:'Phoenix',price:2999,beds:4,baths:3,sqft:2548,pool:true,stories:2,carpet:true,garage:false,laundry:'In-unit',pet:false,url:'https://www.realtor.com/rentals/details/2450-E-Darrel-Rd_Phoenix_AZ_85042_M22380-97603',notes:'2-story w/ large loft. Tile & carpet. Granite counters, breakfast bar, stainless appliances. Primary suite w/ dual sinks, separate shower/tub, walk-in closet. In-unit W/D. Private pool + covered patio. Water, sewer, trash, pest control, pool & landscaping ALL INCLUDED! ❌ No pets. ⚠️ On Q fees: 4.99% admin + $49/mo benefits + one-time $250 lease prep.'},
+  {id:32,addr:'7208 S 30th St',city:'Phoenix',price:2745,beds:4,baths:3,sqft:1841,pool:false,stories:1,carpet:true,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/7208-S-30th-St_Phoenix_AZ_85042_M15007-53665',notes:'Wood-grain plank in main areas, carpet in bedrooms. Open floor plan, high ceilings, breakfast bar, walk-in pantry. Primary suite w/ large walk-in closet. In-unit W/D. Tesla charger in garage! Fenced yard, back porch. Community pool, clubhouse, BBQ. Gated golf course community (Encanto at The Legacy). Golf course views. Near South Mountain Park. Pets: max 2, max 35 lbs.'},
+  {id:33,addr:'1043 E 10th Ave',city:'Mesa',price:2050,beds:4,baths:2,sqft:1263,pool:false,stories:1,carpet:false,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/1043-E-10th-Ave_Mesa_AZ_85204_M24936-89141',notes:'1-story. Tile throughout — no carpet. Breakfast bar, separate family room & living room. In-unit W/D. 1-car garage + 2-car carport — great parking! Covered patio. No HOA. Pets (max 3). ⚠️ On Q fees: 4.99% admin/mo (~$102) + $49/mo benefits + one-time $250 lease prep.'},
+  {id:34,addr:'9206 S Calle Azteca',city:'Guadalupe',price:2450,beds:3,baths:2,sqft:1206,pool:false,stories:1,carpet:false,garage:true,laundry:'In-unit',pet:false,url:'https://www.realtor.com/rentals/details/9206-S-Calle-Azteca_Guadalupe_AZ_85283_M17399-34187',notes:'Can be rented furnished or unfurnished. In-unit W/D, single-car garage. Lawn, porch, deck. Small dogs only (no cats, no large dogs). Available Sept 15 — do not disturb current tenants. Flexible lease (good for travel nurses/students). Near ASU, freeways, HonorHealth Tempe Medical Center. Listed as Guadalupe but described as Tempe location.'},
+  {id:35,addr:'1228 W 5th St #1',city:'Tempe',price:1800,beds:3,baths:2,sqft:950,pool:false,stories:1,carpet:false,garage:false,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/1228-W-5th-St-1_Tempe_AZ_85281_M98048-75010',notes:'1-story, open layout. In-unit W/D. 1 covered parking (no garage). Near ASU, downtown Tempe, freeways. ⚠️ On Q fees: 4.99% admin/mo + $49/mo benefits + one-time $250 lease prep. 🔥 Very high demand — 250 views, 28 saves! Pets max 40 lbs, no pitbulls.'},
+  {id:36,addr:'6322 S Colonial Way',city:'Tempe',price:2295,beds:4,baths:2.5,sqft:1524,pool:false,stories:1,carpet:false,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/6322-S-Colonial-Way_Tempe_AZ_85283_M10860-65960',notes:'Tile — no carpet. Granite countertops, stainless appliances, open floor plan. Balcony. Fenced backyard, patio. Community pool (not private). Smart home w/ video doorbell. ⚠️ True monthly ~$2,395 (smart home $40, W/D $40, air filter $10, utility fee $10). Invitation Homes. Available July 29.'},
+  {id:37,addr:'1527 W Huntington Dr',city:'Tempe',price:2250,beds:3,baths:2,sqft:1185,pool:false,stories:1,carpet:false,garage:false,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/1527-W-Huntington-Dr_Tempe_AZ_85282_M25566-13648',notes:'1-story, built 1963, fully remodeled. Tile & vinyl — no carpet. Custom kitchen w/ 42" cabinets, granite counters, large island. In-unit W/D. Oversized carport (2 cars) + 4 open spots + RV gate. Artificial turf backyard, mature grapefruit tree. Gardening included. No HOA. Near ASU, freeways, Sky Harbor. Available Aug 1.'},
+  {id:38,addr:'6627 S 44th St',city:'Phoenix',price:2045,beds:4,baths:2,sqft:1546,pool:false,stories:1,carpet:false,garage:false,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/6627-S-44th-St_Phoenix_AZ_85042_M22106-51220',notes:'Luxury vinyl plank — no carpet. Stainless appliances. In-unit W/D (fee-based). Fenced backyard, patio. Smart home w/ video doorbell. ⚠️ True monthly ~$2,145 (smart home $40, W/D $40, air filter $10, utility fee $10). Invitation Homes.'},
+  {id:39,addr:'2725 S Azalea Dr',city:'Tempe',price:2300,beds:3,baths:2,sqft:1400,pool:false,stories:1,carpet:false,garage:false,laundry:'Unknown',pet:false,url:'https://www.realtor.com/rentals/details/2725-S-Azalea-Dr_Tempe_AZ_85282_M22460-16599',notes:'1-story townhome, recently renovated. Large 18" tile + new flooring in bedrooms — no carpet. Gourmet kitchen w/ custom cabinets, granite counters & backsplash. Open family room to sunroom. Master suite w/ huge walk-in closet, walk-in shower, French door backyard access. Custom shed, 2-space covered carport. Community pool. Brand new A/C (Aug 2025). ❌ No pets. ⭐ Move-in special: $2,200/mo first 4 months!'},
+  {id:41,addr:'2420 W Roeser Rd',city:'Phoenix',price:1945,beds:3,baths:2,sqft:1386,pool:false,stories:1,carpet:false,garage:false,laundry:'Unknown',pet:true,url:'https://www.realtor.com/rentals/details/2420-W-Roeser-Rd_Phoenix_AZ_85041_M16501-70498',notes:'Built 2005. Modern finishes, natural light, good storage. Yard. Pet friendly. Managed by Main Street Renewal. Details sparse — worth a tour.'},
+  {id:42,addr:'7026 S 41st Pl',city:'Phoenix',price:2245,beds:3,baths:2,sqft:1370,pool:false,stories:2,carpet:false,garage:true,laundry:'Hookups',pet:true,url:'https://www.realtor.com/rentals/details/7026-S-41st-Pl_Phoenix_AZ_85042_M10468-21254',notes:'2-story, vaulted ceilings. Vinyl plank & tile — no carpet. Granite countertops, eat-in kitchen, open floor plan. W/D hookups (1st floor laundry room). 2-car garage, fenced yard, covered patio. HOA. Smart home. ⚠️ Extra: smart home $19.99/mo, utility service $9.99/mo. Available Aug 17. Photos virtually staged.'},
+  {id:43,addr:'2624 W Beautiful Ln',city:'Phoenix',price:2049,beds:3,baths:2,sqft:1344,pool:false,stories:1,carpet:false,garage:false,laundry:'Unknown',pet:true,url:'https://www.realtor.com/rentals/details/2624-W-Beautiful-Ln_Phoenix_AZ_85041_M19217-62792',notes:'1-story, corner lot, south-facing (lots of natural light). 20" tile — no carpet. Open floor plan, great room, breakfast nook. Granite countertops, maple cabinets, stainless appliances. Split master w/ ensuite, separate tub/shower, dual sinks, walk-in closet. Covered patio, large backyard. Alarm & CCTV. Small dogs & cats only. Silva Mountain community.'},
+  {id:44,addr:'2321 W Mobile Ln',city:'Phoenix',price:2115,beds:4,baths:2,sqft:1390,pool:false,stories:1,carpet:false,garage:true,laundry:'Hookups',pet:true,url:'https://www.realtor.com/rentals/details/2321-W-Mobile-Ln_Phoenix_AZ_85041_M91636-64166',notes:'1-story, skylights, scenic views. Vinyl plank & tile — no carpet. Granite countertops, stainless appliances, eat-in kitchen, pantry. Master w/ garden tub, walk-in shower, dual vanity, walk-in closet. W/D hookups (1st floor laundry). 2-car garage, fenced yard, covered patio, porch. HOA. Smart home. ⭐ $500 off if signed by Aug 2! ⚠️ Extra: smart home $19.99/mo, utility service $9.99/mo.'},
+  {id:45,addr:'2548 W Spencer Run',city:'Phoenix',price:2090,beds:3,baths:2,sqft:2002,pool:false,stories:1,carpet:false,garage:true,laundry:'Unknown',pet:true,url:'https://www.realtor.com/rentals/details/2548-W-Spencer-Run_Phoenix_AZ_85041_M11132-16905',notes:'Built 2004, scenic views. Great value for 2,002 sqft! Garage, central air, ceiling fans. Managed by AMH Living. Details sparse — worth a tour.'},
+  {id:46,addr:'1516 E Bowker St',city:'Phoenix',price:2045,beds:3,baths:2,sqft:1454,pool:false,stories:1,carpet:false,garage:true,laundry:'Unknown',pet:false,url:'https://www.realtor.com/rentals/details/1516-E-Bowker-St_Phoenix_AZ_85040_M23853-27118',notes:'Brand new waterproof LVT vinyl plank — no carpet. Spacious kitchen w/ pantry, all appliances. Primary suite w/ dual sinks, walk-in closet w/ built-in shelving. Separate laundry room (no machines). 2-car garage w/ storage, covered patio, gravel backyard. ❌ No pets (description contradicts listing). ⚠️ $400 cleaning fee, renter\'s insurance required. Near I-10, 16th & Southern.'},
+  {id:47,addr:'7503 S 12th Ave',city:'Phoenix',price:2200,beds:3,baths:2,sqft:1683,pool:false,stories:1,carpet:false,garage:true,laundry:'Unknown',pet:true,url:'https://www.realtor.com/rentals/details/7503-S-12th-Ave_Phoenix_AZ_85041_M19665-79444',notes:'1-story, built 2018 (newer). Tile in main living, laminate in bedrooms — no carpet. 42" kitchen cabinets, large island, walk-in pantry. 2-car garage + 2 open spots. Covered patio, spacious backyard. HOA (Baseline Mountain Ranch). Pets w/ landlord approval. Tons of natural light.'},
+  {id:48,addr:'6041 S 8th Pl',city:'Phoenix',price:1910,beds:3,baths:2,sqft:1302,pool:false,stories:1,carpet:false,garage:true,laundry:'None',pet:true,url:'https://www.realtor.com/rentals/details/6041-S-8th-Pl_Phoenix_AZ_85042_M12111-93895',notes:'Built 2021, newer. Wood-inspired flooring — no carpet. Open concept, contemporary kitchen w/ sleek counters, stainless, large breakfast bar. Primary suite w/ double vanity, walk-in shower w/ floor-to-ceiling tile. ❌ No washer/dryer or hookups. Attached garage, private low-maintenance backyard. Section 8 accepted. ⚠️ $39.95/mo resident benefits + one-time $199 move-in fee.'},
+  {id:49,addr:'5911 S 35th Pl',city:'Phoenix',price:2050,beds:4,baths:2.5,sqft:1472,pool:false,stories:2,carpet:false,garage:true,laundry:'In-unit',pet:true,url:'https://www.realtor.com/rentals/details/5911-S-35th-Pl_Phoenix_AZ_85040_M12993-29319',notes:'2-story, built 2008. Vinyl plank & tile — no carpet. Kitchen w/ breakfast bar, all appliances. Master bedroom w/ balcony! In-unit W/D. 2-car garage, fenced backyard, desert landscaping. HOA (Cardena Villas). Small dog only (w/ approval). No smoking/vaping.'},
+  {id:50,addr:'517 W Duke Dr',city:'Tempe',price:2150,beds:3,baths:2,sqft:1426,pool:false,stories:1,carpet:true,garage:false,laundry:'Unknown',pet:false,url:'https://www.realtor.com/rentals/details/517-W-Duke-Dr_Tempe_AZ_85283_M10507-00581',notes:'1-story townhome, recently updated. LVP flooring + brand new carpet. Updated kitchen countertops, remodeled bathroom vanities, water softener. Covered back patio w/ pavers. Community pools, hot tub, RV storage. Near ASU, Downtown Tempe, Kiwanis Park, Sky Harbor.'},
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let state = {
+  listings: JSON.parse(JSON.stringify(LISTINGS_RAW)),
+  removed: [],
+  roommate: {},   // { listingId: { name, rating, tourStatus, comments:[], checklist:[], tourNotes } }
+  userName: null,
+  activeFilters: new Set(),
+  openDetailId: null,
+  compareIds: [null, null, null],
+};
+
+function getLS(key, def) { try { return JSON.parse(localStorage.getItem(key)) || def; } catch(e) { return def; } }
+function setLS(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
+
+function loadState() {
+  state.removed = getLS('removed', []);
+  state.roommate = getLS('roommate', {});
+  state.userName = getLS('userName', null);
+}
+function saveState() {
+  setLS('removed', state.removed);
+  setLS('roommate', state.roommate);
+  setLS('userName', state.userName);
+  flashSave();
+  syncToSheet();
+}
+
+let saveTimeout;
+function flashSave() {
+  const dot = document.getElementById('saveDot');
+  dot.classList.add('saving');
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => dot.classList.remove('saving'), 1200);
+}
+
+// ── SHEET SYNC ───────────────────────────────────────────────────────────────
+async function syncToSheet() {
+  if (SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+  try {
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ removed: state.removed, roommate: state.roommate }),
+    });
+  } catch(e) {}
+}
+
+async function loadFromSheet() {
+  if (SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+  try {
+    const r = await fetch(SHEET_URL);
+    const d = await r.json();
+    if (d.removed) state.removed = d.removed;
+    if (d.roommate) state.roommate = d.roommate;
+  } catch(e) {}
+}
+
+// ── NAME PICKER ───────────────────────────────────────────────────────────────
+const NAMES = ['Alex','Jordan','Sam','Taylor','Morgan','Casey','Riley','Drew'];
+function initNamePicker() {
+  const grid = document.getElementById('nameGrid');
+  grid.innerHTML = NAMES.map(n => `<div class="name-option" onclick="selectName('${n}',this)">${n}</div>`).join('');
+}
+let selectedName = null;
+function selectName(name, el) {
+  selectedName = name;
+  document.querySelectorAll('.name-option').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('nameCustom').value = '';
+}
+function saveName() {
+  const custom = document.getElementById('nameCustom').value.trim();
+  const name = custom || selectedName;
+  if (!name) { showToast('Pick a name first!'); return; }
+  state.userName = name;
+  setLS('userName', name);
+  document.getElementById('nameModal').style.display = 'none';
+  updateUserUI();
+}
+function resetName() {
+  if (!confirm('Change your name?')) return;
+  state.userName = null;
+  setLS('userName', null);
+  document.getElementById('nameModal').style.display = 'flex';
+  selectedName = null;
+  document.querySelectorAll('.name-option').forEach(e => e.classList.remove('selected'));
+}
+function updateUserUI() {
+  if (!state.userName) return;
+  document.getElementById('userName').textContent = state.userName;
+  document.getElementById('userAvatar').textContent = state.userName[0].toUpperCase();
+}
+
+// ── FILTERS ──────────────────────────────────────────────────────────────────
+function toggleFilter(key) {
+  if (state.activeFilters.has(key)) state.activeFilters.delete(key);
+  else state.activeFilters.add(key);
+  document.getElementById('chip-' + key).classList.toggle('active', state.activeFilters.has(key));
+  renderCards();
+}
+
+function getFiltered() {
+  const city = document.getElementById('fCity').value;
+  const maxPrice = document.getElementById('fPrice').value;
+  const minBeds = document.getElementById('fBeds').value;
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const f = state.activeFilters;
+
+  return state.listings.filter(l => {
+    if (state.removed.includes(l.id)) return false;
+    if (city && l.city !== city) return false;
+    if (maxPrice && l.price > parseInt(maxPrice)) return false;
+    if (minBeds && l.beds < parseInt(minBeds)) return false;
+    if (search && !l.addr.toLowerCase().includes(search) && !l.city.toLowerCase().includes(search)) return false;
+    if (f.has('pool') && !l.pool) return false;
+    if (f.has('nocarpet') && l.carpet) return false;
+    if (f.has('garage') && !l.garage) return false;
+    if (f.has('pet') && !l.pet) return false;
+    const rm = state.roommate[l.id] || {};
+    if (f.has('toured') && rm.tourStatus !== 'toured') return false;
+    if (f.has('nottouredyet') && rm.tourStatus === 'toured') return false;
+    return true;
+  });
+}
+
+// ── RENDER CARDS ─────────────────────────────────────────────────────────────
+function renderCards() {
+  const filtered = getFiltered();
+  const grid = document.getElementById('cardGrid');
+  document.getElementById('badge-listings').textContent = filtered.length;
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">🏠</div><p>No homes match your filters.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(l => {
+    const rm = state.roommate[l.id] || {};
+    const toured = rm.tourStatus === 'toured';
+    const scheduled = rm.tourStatus === 'scheduled';
+    const avgRating = getAvgRating(l.id);
+    const commentCount = Object.values(state.roommate)
+      .filter((v,k) => true)
+      .reduce((acc, v) => {
+        if (v[l.id] && v[l.id].comments) return acc + v[l.id].comments.length;
+        return acc;
+      }, (rm.comments || []).length);
+
+    const badges = [];
+    if (l.beds) badges.push(`<span class="badge badge-beds">${l.beds} bd · ${l.baths} ba · ${l.sqft.toLocaleString()} sqft</span>`);
+    if (l.pool) badges.push(`<span class="badge badge-pool">🏊 Pool</span>`);
+    if (!l.carpet) badges.push(`<span class="badge badge-nocarpet">✨ No carpet</span>`);
+    if (l.garage) badges.push(`<span class="badge badge-garage">🚗 Garage</span>`);
+    if (l.pet) badges.push(`<span class="badge badge-pet">🐾 Pet ok</span>`);
+    if (l.stories) badges.push(`<span class="badge badge-stories">${l.stories === 1 ? '1 story' : '2 story'}</span>`);
+    if (toured) badges.push(`<span class="badge badge-toured">✅ Toured</span>`);
+    else if (scheduled) badges.push(`<span class="badge badge-scheduled">📅 Scheduled</span>`);
+
+    const stars = [1,2,3,4,5].map(n => `<span class="star${n <= avgRating ? ' on' : ''}">★</span>`).join('');
+    const notesPreview = l.notes ? `<div class="card-notes-preview">${l.notes}</div>` : '';
+
+    return `<div class="card${toured?' toured':scheduled?' scheduled':''}" onclick="openDetail(${l.id})">
+      <div class="card-header">
+        <div>
+          <div class="card-addr">${l.addr}</div>
+          <div class="card-city">${l.city}, AZ</div>
+        </div>
+        <div class="card-actions">
+          <span class="card-price">$${l.price.toLocaleString()}</span>
+          <button class="btn-x" onclick="removeCard(event,${l.id})" title="Hide this listing">✕</button>
+        </div>
+      </div>
+      <div class="card-meta">${badges.join('')}</div>
+      ${notesPreview}
+      <div class="card-footer">
+        <div class="stars-display">${stars}</div>
+        <div class="card-btns">
+          ${(rm.comments||[]).length ? `<span style="font-size:11px;color:var(--text3)">${(rm.comments||[]).length} comment${(rm.comments||[]).length>1?'s':''}</span>` : ''}
+          <button class="btn-sm primary" onclick="event.stopPropagation();openDetail(${l.id})">Details →</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function getAvgRating(id) {
+  const rm = state.roommate[id] || {};
+  return rm.rating || 0;
+}
+
+function removeCard(e, id) {
+  e.stopPropagation();
+  state.removed.push(id);
+  saveState();
+  renderCards();
+  renderRemoved();
+  document.getElementById('badge-removed').textContent = state.removed.length;
+  showToast('Listing hidden — find it in Removed tab');
+}
+
+// ── DETAIL PANEL ─────────────────────────────────────────────────────────────
+function openDetail(id) {
+  const l = state.listings.find(x => x.id === id);
+  if (!l) return;
+  state.openDetailId = id;
+  const rm = state.roommate[id] || {};
+  const comments = rm.comments || [];
+  const checklist = rm.checklist || [];
+  const checkItems = [
+    'Living room — spacious?', 'Kitchen — large enough?', 'Kitchen — modern/updated?',
+    'Carpet in bedrooms', 'Carpet in living room', 'Appliances — updated?',
+    'Washer/dryer situation ok?', 'Backyard — usable?', 'Storage space good?',
+    'Natural light throughout?', 'Neighborhood feels safe?', 'Parking is sufficient?',
+  ];
+
+  const starBtns = [1,2,3,4,5].map(n =>
+    `<button class="star-btn${n <= (rm.rating||0) ? ' on' : ''}" onclick="setRating(${id},${n})" aria-label="${n} star">★</button>`
+  ).join('');
+
+  const commentsHtml = comments.length
+    ? comments.map(c => `<div class="comment"><div class="comment-author">${c.author}</div><div class="comment-text">${c.text}</div></div>`).join('')
+    : '<p style="font-size:13px;color:var(--text3)">No comments yet. Be the first!</p>';
+
+  const checkHtml = checkItems.map((item, i) =>
+    `<div class="check-item" onclick="toggleCheck(${id},${i})">
+      <div class="check-box${checklist.includes(i)?' checked':''}"></div>
+      <span class="check-label">${item}</span>
+    </div>`
+  ).join('');
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-header">
+      <div class="detail-addr">${l.addr}</div>
+      <div class="detail-city">${l.city}, AZ ${l.stories === 1 ? '· 1 story' : l.stories === 2 ? '· 2 story' : ''}</div>
+      <div class="detail-price">$${l.price.toLocaleString()}<span style="font-size:14px;color:var(--text3);font-family:Inter,sans-serif">/mo</span></div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">At a glance</div>
+      <div class="detail-grid">
+        <div class="detail-item"><div class="detail-item-label">Beds</div><div class="detail-item-value">${l.beds}</div></div>
+        <div class="detail-item"><div class="detail-item-label">Baths</div><div class="detail-item-value">${l.baths}</div></div>
+        <div class="detail-item"><div class="detail-item-label">Sqft</div><div class="detail-item-value">${l.sqft.toLocaleString()}</div></div>
+        <div class="detail-item"><div class="detail-item-label">$/sqft</div><div class="detail-item-value">$${(l.price/l.sqft).toFixed(2)}</div></div>
+        <div class="detail-item"><div class="detail-item-label">Pool</div><div class="detail-item-value">${l.pool ? '✅ Yes' : '❌ No'}</div></div>
+        <div class="detail-item"><div class="detail-item-label">Carpet</div><div class="detail-item-value">${l.carpet ? '⚠️ Yes' : '✅ None'}</div></div>
+        <div class="detail-item"><div class="detail-item-label">Garage</div><div class="detail-item-value">${l.garage ? '✅ Yes' : '❌ No'}</div></div>
+        <div class="detail-item"><div class="detail-item-label">Laundry</div><div class="detail-item-value" style="font-size:12px">${l.laundry}</div></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Notes</div>
+      <div class="detail-notes">${l.notes || 'No notes yet.'}</div>
+      <a href="${l.url}" target="_blank" class="detail-link" style="margin-top:14px">View on Realtor.com →</a>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Tour status</div>
+      <div class="tour-btns">
+        <div class="tour-btn${rm.tourStatus==='no'||!rm.tourStatus?' active-no':''}" onclick="setTourStatus(${id},'no')">Not yet</div>
+        <div class="tour-btn${rm.tourStatus==='scheduled'?' active-scheduled':''}" onclick="setTourStatus(${id},'scheduled')">📅 Scheduled</div>
+        <div class="tour-btn${rm.tourStatus==='toured'?' active-toured':''}" onclick="setTourStatus(${id},'toured')">✅ Toured</div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Your rating</div>
+      <div class="stars-input">${starBtns}</div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Tour checklist</div>
+      <div class="checklist">${checkHtml}</div>
+      <textarea class="tour-notes" placeholder="Live tour notes — jot anything down..." onchange="saveTourNotes(${id},this.value)">${rm.tourNotes||''}</textarea>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">Comments</div>
+      <div class="comments-list">${commentsHtml}</div>
+      <div class="comment-input-wrap">
+        <textarea class="comment-input" id="commentInput-${id}" placeholder="Add a comment..." rows="1"></textarea>
+        <button class="btn-send" onclick="addComment(${id})">Send</button>
+      </div>
+    </div>
+
+    <div style="padding:16px 20px">
+      <button onclick="removeCard(event,${id});closeDetail()" style="width:100%;padding:12px;background:none;border:1px solid var(--red-dim);border-radius:var(--radius-sm);color:var(--red);font-size:13px;cursor:pointer;font-family:Inter,sans-serif">Hide this listing</button>
+    </div>
+  `;
+
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.getElementById('detailPanel').classList.remove('open');
+  state.openDetailId = null;
+}
+
+function getRm(id) {
+  if (!state.roommate[id]) state.roommate[id] = { rating: 0, tourStatus: 'no', comments: [], checklist: [], tourNotes: '' };
+  return state.roommate[id];
+}
+
+function setRating(id, n) {
+  getRm(id).rating = n;
+  saveState();
+  document.querySelectorAll(`#detailContent .star-btn`).forEach((btn, i) => {
+    btn.classList.toggle('on', i < n);
+  });
+  renderCards();
+}
+
+function setTourStatus(id, status) {
+  getRm(id).tourStatus = status;
+  saveState();
+  document.querySelectorAll('.tour-btn').forEach(b => {
+    b.classList.remove('active-toured','active-scheduled','active-no');
+  });
+  const map = { toured: 'active-toured', scheduled: 'active-scheduled', no: 'active-no' };
+  event.target.classList.add(map[status]);
+  renderCards();
+  showToast(status === 'toured' ? '✅ Marked as toured!' : status === 'scheduled' ? '📅 Tour scheduled!' : 'Status updated');
+}
+
+function toggleCheck(id, idx) {
+  const rm = getRm(id);
+  if (!rm.checklist) rm.checklist = [];
+  const i = rm.checklist.indexOf(idx);
+  if (i > -1) rm.checklist.splice(i, 1);
+  else rm.checklist.push(idx);
+  saveState();
+  const box = event.currentTarget.querySelector('.check-box');
+  box.classList.toggle('checked', rm.checklist.includes(idx));
+}
+
+function saveTourNotes(id, val) {
+  getRm(id).tourNotes = val;
+  saveState();
+}
+
+function addComment(id) {
+  if (!state.userName) { showToast('Set your name first!'); return; }
+  const input = document.getElementById(`commentInput-${id}`);
+  const text = input.value.trim();
+  if (!text) return;
+  const rm = getRm(id);
+  if (!rm.comments) rm.comments = [];
+  rm.comments.push({ author: state.userName, text, time: Date.now() });
+  saveState();
+  input.value = '';
+  const list = document.querySelector('.comments-list');
+  const div = document.createElement('div');
+  div.className = 'comment';
+  div.innerHTML = `<div class="comment-author">${state.userName}</div><div class="comment-text">${text}</div>`;
+  list.appendChild(div);
+  list.querySelector('p') && list.querySelector('p').remove();
+  showToast('Comment added!');
+}
+
+// ── SUMMARY ──────────────────────────────────────────────────────────────────
+function renderSummary() {
+  const active = state.listings.filter(l => !state.removed.includes(l.id));
+  const toured = active.filter(l => (state.roommate[l.id]||{}).tourStatus === 'toured');
+  const scheduled = active.filter(l => (state.roommate[l.id]||{}).tourStatus === 'scheduled');
+  const withPool = active.filter(l => l.pool);
+  const noCarpet = active.filter(l => !l.carpet);
+  const prices = active.map(l => l.price);
+  const avgPrice = Math.round(prices.reduce((a,b)=>a+b,0)/prices.length);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+
+  const topRated = [...active]
+    .filter(l => (state.roommate[l.id]||{}).rating > 0)
+    .sort((a,b) => ((state.roommate[b.id]||{}).rating||0) - ((state.roommate[a.id]||{}).rating||0))
+    .slice(0,5);
+
+  const cheapest = [...active].sort((a,b)=>a.price-b.price).slice(0,3);
+  const biggest = [...active].sort((a,b)=>b.sqft-a.sqft).slice(0,3);
+
+  document.getElementById('summaryContent').innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num">${active.length}</div><div class="stat-label">Active listings</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--green)">${toured.length}</div><div class="stat-label">Toured</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--yellow)">${scheduled.length}</div><div class="stat-label">Scheduled</div></div>
+      <div class="stat-card"><div class="stat-num">${withPool.length}</div><div class="stat-label">Have a pool</div></div>
+      <div class="stat-card"><div class="stat-num">$${avgPrice.toLocaleString()}</div><div class="stat-label">Avg price/mo</div></div>
+      <div class="stat-card"><div class="stat-num">$${minPrice.toLocaleString()}</div><div class="stat-label">Cheapest</div></div>
+      <div class="stat-card"><div class="stat-num">${noCarpet.length}</div><div class="stat-label">No carpet</div></div>
+      <div class="stat-card"><div class="stat-num">${active.filter(l=>l.garage).length}</div><div class="stat-label">Have garage</div></div>
+    </div>
+
+    ${topRated.length ? `
+    <div>
+      <div class="section-title">⭐ Top rated</div>
+      <div class="leaderboard">
+        ${topRated.map(l => `<div class="leader-item" onclick="openDetail(${l.id})">
+          <div><div class="leader-addr">${l.addr}</div><div class="leader-city">${l.city} · $${l.price.toLocaleString()}/mo</div></div>
+          <div style="color:var(--yellow);font-size:16px">${'★'.repeat((state.roommate[l.id]||{}).rating||0)}</div>
+        </div>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <div>
+      <div class="section-title">💰 Most affordable</div>
+      <div class="leaderboard">
+        ${cheapest.map(l => `<div class="leader-item" onclick="openDetail(${l.id})">
+          <div><div class="leader-addr">${l.addr}</div><div class="leader-city">${l.city} · ${l.beds} bd · ${l.sqft.toLocaleString()} sqft</div></div>
+          <div style="color:var(--accent);font-weight:600">$${l.price.toLocaleString()}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">📐 Biggest homes</div>
+      <div class="leaderboard">
+        ${biggest.map(l => `<div class="leader-item" onclick="openDetail(${l.id})">
+          <div><div class="leader-addr">${l.addr}</div><div class="leader-city">${l.city} · $${l.price.toLocaleString()}/mo</div></div>
+          <div style="color:var(--text2);font-weight:600">${l.sqft.toLocaleString()} sqft</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ── COMPARE ───────────────────────────────────────────────────────────────────
+function renderCompare() {
+  const active = state.listings.filter(l => !state.removed.includes(l.id));
+  const opts = active.map(l => `<option value="${l.id}">${l.addr}, ${l.city} — $${l.price.toLocaleString()}</option>`).join('');
+
+  document.getElementById('compareSelects').innerHTML = [0,1,2].map(i => `
+    <select class="compare-select" onchange="updateCompare(${i},this.value)">
+      <option value="">— Pick home ${i+1} —</option>
+      ${opts}
+    </select>
+  `).join('');
+  updateCompareTable();
+}
+
+function updateCompare(i, val) {
+  state.compareIds[i] = val ? parseInt(val) : null;
+  updateCompareTable();
+}
+
+function updateCompareTable() {
+  const selected = state.compareIds.filter(Boolean).map(id => state.listings.find(l => l.id === id)).filter(Boolean);
+  if (!selected.length) { document.getElementById('compareTable').innerHTML = ''; return; }
+
+  const rows = [
+    ['Price/mo', l => `$${l.price.toLocaleString()}`],
+    ['Beds', l => l.beds],
+    ['Baths', l => l.baths],
+    ['Sqft', l => l.sqft.toLocaleString()],
+    ['$/sqft', l => `$${(l.price/l.sqft).toFixed(2)}`],
+    ['Pool', l => l.pool ? '✅' : '❌'],
+    ['Carpet', l => l.carpet ? '⚠️ Yes' : '✅ No'],
+    ['Garage', l => l.garage ? '✅' : '❌'],
+    ['Laundry', l => l.laundry],
+    ['Pet friendly', l => l.pet ? '✅' : '❌'],
+    ['Stories', l => l.stories || '?'],
+    ['City', l => l.city],
+    ['Rating', l => (state.roommate[l.id]||{}).rating ? '★'.repeat((state.roommate[l.id]||{}).rating) : '—'],
+  ];
+
+  document.getElementById('compareTable').innerHTML = `<table>
+    <thead><tr><th>Feature</th>${selected.map(l=>`<th>${l.addr.split(' ').slice(0,3).join(' ')}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(([label, fn]) => `<tr><td style="color:var(--text3);font-weight:500">${label}</td>${selected.map(l=>`<td>${fn(l)}</td>`).join('')}</tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// ── REMOVED ───────────────────────────────────────────────────────────────────
+function renderRemoved() {
+  const removedListings = state.listings.filter(l => state.removed.includes(l.id));
+  const wrap = document.getElementById('removedList');
+  document.getElementById('badge-removed').textContent = removedListings.length;
+  if (!removedListings.length) {
+    wrap.innerHTML = '<div class="empty"><div class="empty-icon">🗑️</div><p>No removed listings yet.</p></div>';
+    return;
+  }
+  wrap.innerHTML = removedListings.map(l => `
+    <div class="removed-card">
+      <div>
+        <div style="font-size:14px;font-weight:500">${l.addr}</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px">${l.city} · $${l.price.toLocaleString()}/mo · ${l.beds} bd</div>
+      </div>
+      <button class="btn-restore" onclick="restoreCard(${l.id})">Restore</button>
+    </div>
+  `).join('');
+}
+
+function restoreCard(id) {
+  state.removed = state.removed.filter(x => x !== id);
+  saveState();
+  renderCards();
+  renderRemoved();
+  showToast('Listing restored!');
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  ['listings','summary','compare','removed'].forEach(t => {
+    document.getElementById('view-' + t).style.display = t === tab ? 'block' : 'none';
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+  });
+  if (tab === 'summary') renderSummary();
+  if (tab === 'compare') renderCompare();
+  if (tab === 'removed') renderRemoved();
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+let toastTimeout;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+loadState();
+initNamePicker();
+
+if (!state.userName) {
+  document.getElementById('nameModal').style.display = 'flex';
+} else {
+  document.getElementById('nameModal').style.display = 'none';
+  updateUserUI();
+}
+
+renderCards();
+renderRemoved();
+</script>
+</body>
+</html>
